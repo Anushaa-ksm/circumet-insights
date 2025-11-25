@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Generate Extension Icons</title>
+</head>
+<body>
+  <h2>Generate CircuMet Extension Icons</h2>
+  <p>Open this file in a browser and click the button to download PNG icons.</p>
+  <button onclick="generateIcons()">Generate & Download Icons</button>
+  
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <script>
+    function generateIcons() {
+      const sizes = [16, 48, 128];
+      const svg = `
+        <svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="64" cy="64" r="60" fill="#2d5a3d"/>
+          <path d="M 64 24 A 40 40 0 0 1 64 104 M 64 28 L 64 20 M 56 26 L 60 20 M 72 26 L 68 20" 
+                stroke="#66bb6a" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M 64 104 A 40 40 0 0 1 24 64 M 24 64 L 16 64 M 26 72 L 20 68 M 26 56 L 20 60" 
+                stroke="#66bb6a" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M 24 64 A 40 40 0 0 1 64 24 M 64 24 L 64 16 M 56 22 L 60 16 M 72 22 L 68 16" 
+                stroke="#66bb6a" stroke-width="6" fill="none" stroke-linecap="round"/>
+        </svg>
+      `;
+
+      sizes.forEach(size => {
+        const canvas = document.getElementById('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        const img = new Image();
+        const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+
+        img.onload = function() {
+          ctx.drawImage(img, 0, 0, size, size);
+          canvas.toBlob(function(blob) {
+            const link = document.createElement('a');
+            link.download = `icon${size}.png`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+          });
+          URL.revokeObjectURL(url);
+        };
+
+        img.src = url;
+      });
+
+      alert('Icons will download automatically. Place them in the icons folder.');
+    }
+  </script>
+</body>
+</html>

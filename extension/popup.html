@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>CircuMet Autofill</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      width: 380px;
+      min-height: 500px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1a4d2e 0%, #2d5a3d 100%);
+      color: #e8f5e9;
+      padding: 16px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #81c784;
+      margin-bottom: 4px;
+    }
+    
+    .subtitle {
+      font-size: 11px;
+      color: #a5d6a7;
+    }
+    
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(129, 199, 132, 0.2);
+    }
+    
+    .field {
+      margin-bottom: 10px;
+    }
+    
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #a5d6a7;
+      margin-bottom: 4px;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(129, 199, 132, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: #e8f5e9;
+      font-size: 13px;
+    }
+    
+    input::placeholder {
+      color: rgba(232, 245, 233, 0.5);
+    }
+    
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 8px;
+    }
+    
+    .btn-primary {
+      background: #66bb6a;
+      color: #1a4d2e;
+    }
+    
+    .btn-primary:hover {
+      background: #81c784;
+    }
+    
+    .btn-secondary {
+      background: rgba(129, 199, 132, 0.2);
+      color: #a5d6a7;
+      border: 1px solid rgba(129, 199, 132, 0.3);
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(129, 199, 132, 0.3);
+    }
+    
+    .results {
+      display: none;
+    }
+    
+    .results.visible {
+      display: block;
+    }
+    
+    .gauge-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .gauge {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin: 0 auto;
+    }
+    
+    .gauge-circle {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+    
+    .gauge-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.1);
+      stroke-width: 10;
+    }
+    
+    .gauge-fill {
+      fill: none;
+      stroke-width: 10;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s ease-out;
+    }
+    
+    .gauge-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    
+    .gauge-score {
+      font-size: 32px;
+      font-weight: 700;
+    }
+    
+    .gauge-label {
+      font-size: 10px;
+      color: #a5d6a7;
+    }
+    
+    .gauge-rating {
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    
+    .chart-bar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .chart-label {
+      width: 80px;
+      font-size: 11px;
+      color: #a5d6a7;
+    }
+    
+    .chart-fill {
+      flex: 1;
+      height: 20px;
+      background: linear-gradient(90deg, #66bb6a, #81c784);
+      border-radius: 4px;
+      transition: width 0.8s ease-out;
+    }
+    
+    .chart-value {
+      margin-left: 8px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    
+    .recommendations {
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+    }
+    
+    .recommendations h3 {
+      font-size: 12px;
+      color: #ffc107;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .recommendations li {
+      font-size: 11px;
+      margin-bottom: 6px;
+      padding-left: 12px;
+      position: relative;
+    }
+    
+    .recommendations li:before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: #ffc107;
+    }
+    
+    .disclaimer {
+      font-size: 10px;
+      color: rgba(232, 245, 233, 0.6);
+      text-align: center;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>CircuMet Autofill</h1>
+    <p class="subtitle">LCA & Circularity Assessment</p>
+  </div>
+
+  <div class="card inputs">
+    <button class="btn-primary" id="autofillBtn">🔍 Autofill from Page</button>
+    
+    <div class="field">
+      <label>Material</label>
+      <select id="material">
+        <option value="aluminium">Aluminium</option>
+        <option value="copper">Copper</option>
+        <option value="steel">Steel</option>
+        <option value="nickel">Nickel</option>
+        <option value="iron">Iron</option>
+        <option value="zinc">Zinc</option>
+        <option value="brass">Brass</option>
+        <option value="bronze">Bronze</option>
+        <option value="titanium">Titanium</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Process Type</label>
+      <select id="processType">
+        <option value="extrusion">Extrusion</option>
+        <option value="rolling">Rolling</option>
+        <option value="casting">Casting</option>
+        <option value="forging">Forging</option>
+        <option value="drawing">Drawing</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Product Type</label>
+      <select id="productType">
+        <option value="sheet">Sheet</option>
+        <option value="rod">Rod</option>
+        <option value="wire">Wire</option>
+        <option value="plate">Plate</option>
+        <option value="bar">Bar</option>
+        <option value="coil">Coil</option>
+        <option value="tube">Tube</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Energy (kWh/kg)</label>
+      <input type="number" id="energy" placeholder="e.g., 15.2" step="0.1" min="0">
+    </div>
+
+    <div class="field">
+      <label>Transport Distance (km)</label>
+      <input type="number" id="transport" placeholder="e.g., 500" step="1" min="0">
+    </div>
+
+    <div class="field">
+      <label>Recycled Content (%)</label>
+      <input type="number" id="recycled" placeholder="e.g., 65" step="1" min="0" max="100">
+    </div>
+
+    <button class="btn-primary" id="runModelBtn">⚡ Run Model</button>
+    <button class="btn-secondary" id="resetBtn">Reset</button>
+  </div>
+
+  <div class="results" id="results">
+    <div class="card">
+      <div class="gauge-container">
+        <div class="gauge">
+          <svg class="gauge-circle" viewBox="0 0 140 140">
+            <circle class="gauge-bg" cx="70" cy="70" r="60"></circle>
+            <circle class="gauge-fill" id="gaugeFill" cx="70" cy="70" r="60"></circle>
+          </svg>
+          <div class="gauge-text">
+            <div class="gauge-score" id="gaugeScore">0</div>
+            <div class="gauge-label">out of 100</div>
+          </div>
+        </div>
+        <div class="gauge-rating" id="gaugeRating">Circularity Score</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size: 13px; margin-bottom: 12px; color: #81c784;">CO₂ Breakdown</h3>
+      <div class="chart-bar">
+        <div class="chart-label">Material</div>
+        <div class="chart-fill" id="barMaterial" style="width: 0%"></div>
+        <div class="chart-value" id="valMaterial">0 kg</div>
+      </div>
+      <div class="chart-bar">
+        <div class="chart-label">Energy</div>
+        <div class="chart-fill" id="barEnergy" style="width: 0%"></div>
+        <div class="chart-value" id="valEnergy">0 kg</div>
+      </div>
+      <div class="chart-bar">
+        <div class="chart-label">Transport</div>
+        <div class="chart-fill" id="barTransport" style="width: 0%"></div>
+        <div class="chart-value" id="valTransport">0 kg</div>
+      </div>
+      <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(129, 199, 132, 0.2);">
+        <div style="display: flex; justify-content: space-between; font-weight: 600;">
+          <span>Total CO₂</span>
+          <span id="totalCO2">0 kg</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card recommendations">
+      <h3>💡 Recommendations</h3>
+      <ul id="recommendationsList"></ul>
+    </div>
+
+    <div class="disclaimer">
+      Model version: demo-simple-v0.1 — values are approximate
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

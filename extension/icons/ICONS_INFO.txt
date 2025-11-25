@@ -1,0 +1,18 @@
+ICONS REQUIRED:
+
+You need to add three icon files to this folder:
+- icon16.png (16x16 pixels)
+- icon48.png (48x48 pixels)
+- icon128.png (128x128 pixels)
+
+These should be simple green/eco-themed icons representing sustainability or recycling.
+
+You can:
+1. Create them using any image editor
+2. Use an online icon generator
+3. Download free icons from sites like flaticon.com or icons8.com
+
+For now, the extension will work but show a generic icon.
+To make it look professional, add these PNG files.
+
+Recommended design: A green circular arrow (recycling symbol) or leaf icon.
